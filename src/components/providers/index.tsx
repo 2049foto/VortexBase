@@ -1,25 +1,35 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 
 import { FrameProvider } from './frame-provider';
 import { ToastProvider } from './toast-provider';
 import { WagmiProvider } from './wagmi-provider';
 
-// Dynamic import for devtools (only in development, client-side only)
-let ReactQueryDevtools: React.ComponentType<{ initialIsOpen?: boolean }> | null = null;
+// Devtools component - only loaded in development
+const DevtoolsWrapper = () => {
+  const [Devtools, setDevtools] = useState<React.ComponentType<{ initialIsOpen?: boolean }> | null>(null);
 
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  // Only load devtools in browser and development
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { ReactQueryDevtools: Devtools } = require('@tanstack/react-query-devtools');
-    ReactQueryDevtools = Devtools;
-  } catch {
-    // Devtools not available, ignore
+  useEffect(() => {
+    // Only load in development and client-side
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      import('@tanstack/react-query-devtools')
+        .then((module) => {
+          setDevtools(() => module.ReactQueryDevtools);
+        })
+        .catch(() => {
+          // Devtools not available, ignore
+        });
+    }
+  }, []);
+
+  if (!Devtools || process.env.NODE_ENV !== 'development') {
+    return null;
   }
-}
+
+  return <Devtools initialIsOpen={false} />;
+};
 
 interface ProvidersProps {
   children: ReactNode;
@@ -61,7 +71,7 @@ export function Providers({ children }: ProvidersProps) {
           <ToastProvider>{children}</ToastProvider>
         </FrameProvider>
       </WagmiProvider>
-      {ReactQueryDevtools && <ReactQueryDevtools initialIsOpen={false} />}
+      <DevtoolsWrapper />
     </QueryClientProvider>
   );
 }

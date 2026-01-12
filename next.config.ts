@@ -195,7 +195,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 
   // Webpack customization
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // Fix for packages that use Node.js modules
     if (!isServer) {
       config.resolve.fallback = {
@@ -212,6 +212,14 @@ const nextConfig: NextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
+
+    // Ignore devtools in production builds
+    if (process.env.NODE_ENV === 'production') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@tanstack/react-query-devtools': false,
+      };
+    }
 
     // Ignore unnecessary warnings
     config.ignoreWarnings = [{ module: /node_modules/ }];
