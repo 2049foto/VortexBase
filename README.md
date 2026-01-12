@@ -60,19 +60,28 @@ Vortex Protocol is a gasless dust token consolidation engine built on Base. Tran
 
 ```bash
 # Clone repository
-git clone https://github.com/2049foto/Vortex-.git
-cd vortex-protocol
+git clone https://github.com/2049foto/VortexBase.git
+cd VortexBase
 
 # Install dependencies (using Bun)
 bun install
 
 # Setup environment variables
-cp .env.example .env.local
+# Copy apps/api/ENV_SETUP.md for backend variables
+# Create apps/web/.env.local for frontend
 
 # Run database migrations
-bun run db:migrate
+cd apps/api
+bun run db:push
+bun run db:seed
 
-# Start development server
+# Start development servers
+# Terminal 1: Backend
+cd apps/api
+bun run dev
+
+# Terminal 2: Frontend
+cd apps/web
 bun run dev
 ```
 
@@ -118,44 +127,59 @@ See `.env.example` for the complete list.
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                  # Next.js App Router pages
-│   ├── api/             # API routes
-│   ├── dashboard/       # Dashboard pages
-│   ├── frames/          # Farcaster Frame routes
-│   └── layout.tsx       # Root layout
-├── components/          # React components
-│   ├── providers/       # Context providers
-│   ├── ui/              # Shadcn/ui components
-│   └── ...
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility functions
-│   ├── db/              # Database schema & queries
-│   ├── services/        # Business logic
-│   └── ...
-├── styles/              # Global CSS
-└── types/               # TypeScript types
+VortexBase/
+├── apps/
+│   ├── api/             # Backend (Bun + Elysia)
+│   │   ├── src/
+│   │   │   ├── db/      # Database schema & queries
+│   │   │   ├── services/# Business logic (10 services)
+│   │   │   ├── routes/  # API routes (10 routes)
+│   │   │   ├── middleware/# Auth, logger, rate-limit
+│   │   │   └── __tests__/# Unit + integration tests
+│   │   ├── Dockerfile   # Production Docker image
+│   │   └── fly.toml     # Fly.io deployment config
+│   │
+│   └── web/             # Frontend (Next.js 15)
+│       ├── src/
+│       │   ├── app/     # Next.js pages
+│       │   ├── components/# React components
+│       │   ├── hooks/   # Custom hooks
+│       │   └── lib/     # Utilities
+│       └── vercel.json  # Vercel deployment config
+│
+├── .env.local           # Environment variables (NOT in git)
+└── README.md
 ```
 
 ## 🧪 Commands
 
+### Backend (apps/api)
 ```bash
+cd apps/api
+
 # Development
-bun run dev              # Start dev server (Turbopack)
-bun run build            # Build for production
-bun run start            # Start production server
-bun run lint             # Run ESLint
-bun run type-check       # Run TypeScript check
+bun run dev              # Start API server (port 3001)
+bun run typecheck        # TypeScript check
+bun run test             # Run 88 unit + integration tests
 
 # Database
-bun run db:generate      # Generate migrations
-bun run db:migrate       # Run migrations
-bun run db:push          # Push schema changes
+bun run db:push          # Push schema to Neon
+bun run db:seed          # Seed test data
 bun run db:studio        # Open Drizzle Studio
 
-# Testing
-bun run test             # Run tests
-bun run test:coverage    # Run tests with coverage
+# Deployment
+./scripts/deploy.sh      # Deploy to Fly.io
+```
+
+### Frontend (apps/web)
+```bash
+cd apps/web
+
+# Development
+bun run dev              # Start Next.js dev server (port 3000)
+bun run build            # Build for production
+bun run start            # Start production server
+bunx tsc --noEmit        # TypeScript check
 ```
 
 ## 🔐 Security
