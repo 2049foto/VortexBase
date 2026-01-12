@@ -28,6 +28,9 @@ export function formatUsd(value: number): string {
   }).format(value);
 }
 
+// Alias for compatibility
+export const formatUSD = formatUsd;
+
 /**
  * Format number with commas
  */

@@ -7,12 +7,13 @@ import { log } from './logger';
 
 export class ApiError extends Error {
   constructor(
-    public message: string,
+    public override message: string,
     public statusCode: number = 500,
     public code: string = 'INTERNAL_ERROR'
   ) {
     super(message);
     this.name = 'ApiError';
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
 
@@ -20,6 +21,7 @@ export class ValidationError extends ApiError {
   constructor(message: string, public field?: string) {
     super(message, 400, 'VALIDATION_ERROR');
     this.name = 'ValidationError';
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
@@ -27,6 +29,7 @@ export class AuthError extends ApiError {
   constructor(message: string = 'Unauthorized') {
     super(message, 401, 'AUTH_ERROR');
     this.name = 'AuthError';
+    Object.setPrototypeOf(this, AuthError.prototype);
   }
 }
 
@@ -34,6 +37,7 @@ export class NotFoundError extends ApiError {
   constructor(resource: string = 'Resource') {
     super(`${resource} not found`, 404, 'NOT_FOUND');
     this.name = 'NotFoundError';
+    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
 
@@ -41,6 +45,7 @@ export class RateLimitError extends ApiError {
   constructor(retryAfter: number = 60) {
     super(`Rate limit exceeded. Retry after ${retryAfter}s`, 429, 'RATE_LIMIT');
     this.name = 'RateLimitError';
+    Object.setPrototypeOf(this, RateLimitError.prototype);
   }
 }
 

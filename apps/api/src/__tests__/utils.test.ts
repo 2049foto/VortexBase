@@ -35,15 +35,21 @@ describe('Retry Utility', () => {
 
     test('should throw after max retries', async () => {
       let attempts = 0;
-      await expect(
-        withRetry(
+      try {
+        await withRetry(
           async () => {
             attempts++;
             throw new Error('Permanent failure');
           },
           { maxRetries: 2, delayMs: 10 }
-        )
-      ).rejects.toThrow('Permanent failure');
+        );
+        expect(false).toBe(true); // Should not reach here
+      } catch (error) {
+        expect(error instanceof Error).toBe(true);
+        if (error instanceof Error) {
+          expect(error.message).toBe('Permanent failure');
+        }
+      }
 
       expect(attempts).toBe(3); // Initial + 2 retries
     });
@@ -56,15 +62,18 @@ describe('Retry Utility', () => {
       };
 
       let attempts = 0;
-      await expect(
-        withRetry(
+      try {
+        await withRetry(
           async () => {
             attempts++;
             throw new Error('Fail');
           },
           config
-        )
-      ).rejects.toThrow();
+        );
+        expect(false).toBe(true); // Should not reach here
+      } catch (error) {
+        expect(error instanceof Error).toBe(true);
+      }
 
       expect(attempts).toBe(2); // Initial + 1 retry
     });

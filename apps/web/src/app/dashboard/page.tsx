@@ -205,7 +205,7 @@ function DashboardContent() {
                 <div>
                   <h3 className="font-semibold mb-1">Daily Quests</h3>
                   <p className="text-sm text-vortex-text-muted">
-                    {dailyQuests.filter((q) => q.completed && !q.claimed).length} ready to claim
+                    {dailyQuests.filter((q: { completed: boolean; claimed: boolean }) => q.completed && !q.claimed).length} ready to claim
                   </p>
                 </div>
                 <ArrowRight
