@@ -1,0 +1,48 @@
+# Docker ignore file for Vortex API
+
+# Dependencies
+node_modules
+.bun
+
+# Build output
+dist
+drizzle
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Env files (secrets should be set via Fly.io)
+.env
+.env.local
+.env.*.local
+
+# Test files
+__tests__
+*.test.ts
+*.spec.ts
+coverage
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# Misc
+.fly
+fly.toml
+Dockerfile
+.dockerignore

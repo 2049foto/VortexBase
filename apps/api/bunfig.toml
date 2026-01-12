@@ -1,0 +1,6 @@
+[install]
+optional = true
+
+[run]
+bun = true
+# Bun will automatically load .env files from CWD and parent directories
